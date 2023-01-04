@@ -40,3 +40,10 @@ for (i in files$id){
 
 ```
 
+```{r}
+
+test <- fromJSON(here("shinylogs_RIBBiTR_DataRepository_1672866478016627000.json"), flatten = T)
+
+test$session
+```
+
