@@ -1,0 +1,42 @@
+---
+title: "shiny_logs"
+author: "Jake Eisaguirre"
+date: "2023-01-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+if (!require(librarian)){
+  install.packages("librarian")
+  library(librarian)
+}
+
+# librarian downloads, if not already downloaded, and reads in needed packages
+
+librarian::shelf(tidyverse, here, janitor, googledrive, rjson, jsonlite)
+
+```
+
+
+```{r}
+
+drive_auth(email = "eisaguirre@ucsb.edu")
+
+```
+
+```{r}
+log_folder <- "https://drive.google.com/drive/folders/1UeEAlxbToJCM3bb-6AW8R-L8m66oIz-M"
+
+files <- drive_ls(log_folder)
+
+for (i in files$id){
+  drive_download(file = as_id(i), path = paste0(here("json_logs"), "/", i), overwrite = T)
+}
+
+
+
+```
+
