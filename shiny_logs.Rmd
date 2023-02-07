@@ -16,34 +16,34 @@ if (!require(librarian)){
 
 # librarian downloads, if not already downloaded, and reads in needed packages
 
-librarian::shelf(tidyverse, here, janitor, googledrive, rjson, jsonlite)
+librarian::shelf(tidyverse, here, janitor, purrr, learnitdown, tidyr, stringr)
 
 ```
 
-
+# load logs of interest
 ```{r}
 
-drive_auth(email = "eisaguirre@ucsb.edu")
+files <- list.files(here("logs"))
 
-```
+for (i in seq_along(files)){
 
-```{r}
-log_folder <- "https://drive.google.com/drive/folders/1UeEAlxbToJCM3bb-6AW8R-L8m66oIz-M"
+  temp <- read_shinylogs(here("logs", files[i]))
+    
+  data <- rbind(data, temp)
 
-files <- drive_ls(log_folder)
-
-for (i in files$id){
-  drive_download(file = as_id(i), path = paste0(here("json_logs"), "/", i), overwrite = T)
 }
-
-
-
 ```
 
+# search log for `download_btn`
 ```{r}
-
-test <- fromJSON(here("shinylogs_RIBBiTR_DataRepository_1672866478016627000.json"), flatten = T)
-
-test$session
+log <- data %>% 
+  select(date, user, label, value) %>% 
+  filter(label %in% c("location", "region", "site") |
+         str_detect(label,"download_btn") |
+         str_detect(label, "bd")) %>% 
+  mutate(value = str_remove_all(value, "list"),
+         value = str_remove_all(value, ","),
+         value = str_remove_all(value, "\\("),
+         value = str_remove_all(value, "\\)"))
 ```
 
