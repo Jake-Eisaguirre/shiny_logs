@@ -25,6 +25,8 @@ librarian::shelf(tidyverse, here, janitor, purrr, learnitdown, tidyr, stringr)
 
 files <- list.files(here("logs"))
 
+data <- data.frame()
+
 for (i in seq_along(files)){
 
   temp <- read_shinylogs(here("logs", files[i]))
@@ -34,16 +36,39 @@ for (i in seq_along(files)){
 }
 ```
 
+```{r}
+t <- data %>% 
+  select(date, label, value) %>% 
+  separate_longer_delim(value, ',')
+```
+
+
 # search log for `download_btn`
 ```{r}
 log <- data %>% 
-  select(date, user, label, value) %>% 
-  filter(label %in% c("location", "region", "site") |
+  select(session, date, user, label, value) %>% 
+  separate_longer_delim(value, ',') %>% 
+  filter(label %in% c("location") |
          str_detect(label,"download_btn") |
-         str_detect(label, "bd")) %>% 
+         str_detect(label, "bd")|
+         str_detect(label, "amp")|
+         str_detect(label, "muc_mic") |
+         str_detect(label, "genom") |
+         str_detect(label, ".clientdata_output")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
          value = str_remove_all(value, "\\)"))
+```
+
+# visualize data
+```{r}
+
+
+
+
+ggplot(data = log, aes(x = user, y = label)) +
+  geom_col()
+
 ```
 
