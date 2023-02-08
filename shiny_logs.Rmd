@@ -43,32 +43,35 @@ t <- data %>%
 ```
 
 
-# search log for `download_btn`
+# search log for `download_btn` and inspect logs for `location` and `region` by `user` and `session`
 ```{r}
-log <- data %>% 
+
+dwnld <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>% 
-  filter(label %in% c("location") |
-         str_detect(label,"download_btn") |
-         str_detect(label, "bd")|
-         str_detect(label, "amp")|
-         str_detect(label, "muc_mic") |
-         str_detect(label, "genom") |
-         str_detect(label, ".clientdata_output")) %>% 
+  filter(str_detect(label,"download_btn")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
          value = str_remove_all(value, "\\)"))
+
+log <- data %>% 
+  select(session, date, user, label, value) %>% 
+  separate_longer_delim(value, ',') %>%
+  filter(session %in% dwnld$session,
+         label %in% c("location", "region")) %>% 
+  mutate(value = str_remove_all(value, "list"),
+         value = str_remove_all(value, ","),
+         value = str_remove_all(value, "\\("),
+         value = str_remove_all(value, "\\)")) %>% 
+  group_by(session, date) %>% 
+  mutate(date = sort(date))
 ```
 
 # visualize data
 ```{r}
 
 
-
-
-ggplot(data = log, aes(x = user, y = label)) +
-  geom_col()
 
 ```
 
