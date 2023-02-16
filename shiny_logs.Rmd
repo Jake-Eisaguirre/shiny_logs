@@ -36,30 +36,26 @@ for (i in seq_along(files)){
 }
 ```
 
-```{r}
-t <- data %>% 
-  select(date, label, value) %>% 
-  separate_longer_delim(value, ',')
-```
-
-
 # search log for `download_btn` and inspect logs for `location` and `region` by `user` and `session`
 ```{r}
 
 dwnld <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>% 
-  filter(str_detect(label,"download_btn")) %>% 
+  filter(str_detect(label,"download_btn") | 
+         str_detect(label, "auth-user")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
-         value = str_remove_all(value, "\\)"))
+         value = str_remove_all(value, "\\)")) %>% 
+  filter(duplicated(session))
+
 
 log <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>%
-  filter(session %in% dwnld$session,
-         label %in% c("location", "region")) %>% 
+  filter(session == "9804bebf52e270ba6fb8c406cbbe8c54", #insert session id of interest
+         label %in% c("location", "region", "region_hobo", "location_hobo")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
