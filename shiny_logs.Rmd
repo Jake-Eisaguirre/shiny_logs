@@ -67,8 +67,12 @@ dwnld <- data %>%
 log <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>%
-  filter(session == "9804bebf52e270ba6fb8c406cbbe8c54", #insert session id of interest
-         label %in% c("location", "region", "region_hobo", "location_hobo")) %>% 
+  filter(session == "5a435f462596424f5cbbf6eb01559004", #insert session id of interest
+         label %in% c("location", "region", 
+                      "location_hobo", "region_hobo",
+                      "location_a", "region_a",
+                      "location_ves", "region_ves",
+                      "location_audio", "region_audio")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
