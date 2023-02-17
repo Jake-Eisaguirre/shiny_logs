@@ -20,6 +20,15 @@ librarian::shelf(tidyverse, here, janitor, purrr, learnitdown, tidyr, stringr)
 
 ```
 
+
+# In the terminal or code chunk run bash function `load_logs` to pull logs folder from EC2 server to local machine
+```{bash, engine.opts='-l'}
+
+load_logs
+
+```
+
+
 # load logs of interest
 ```{r}
 
@@ -36,7 +45,8 @@ for (i in seq_along(files)){
 }
 ```
 
-# search log for `download_btn` and inspect logs for `location` and `region` by `user` and `session`
+
+# search log for `download_btn` and inspect logs for `user` and `session`
 ```{r}
 
 dwnld <- data %>% 
@@ -49,8 +59,11 @@ dwnld <- data %>%
          value = str_remove_all(value, "\\("),
          value = str_remove_all(value, "\\)")) %>% 
   filter(duplicated(session))
+```
 
 
+# inspect `location` and `region` values by `session` of interest
+```{r}
 log <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>%
@@ -59,9 +72,7 @@ log <- data %>%
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
-         value = str_remove_all(value, "\\)")) %>% 
-  group_by(session, date) %>% 
-  mutate(date = sort(date))
+         value = str_remove_all(value, "\\)")) 
 ```
 
 # visualize data
