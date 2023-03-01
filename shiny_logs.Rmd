@@ -53,12 +53,13 @@ dwnld <- data %>%
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>% 
   filter(str_detect(label,"download_btn") | 
-         str_detect(label, "auth-user")) %>% 
+         label %in% c("auth-user_id")) %>% 
   mutate(value = str_remove_all(value, "list"),
          value = str_remove_all(value, ","),
          value = str_remove_all(value, "\\("),
          value = str_remove_all(value, "\\)")) %>% 
-  filter(duplicated(session))
+  group_by(session) %>% 
+  filter(!duplicated(session))
 ```
 
 
@@ -67,7 +68,7 @@ dwnld <- data %>%
 log <- data %>% 
   select(session, date, user, label, value) %>% 
   separate_longer_delim(value, ',') %>%
-  filter(session == "5a435f462596424f5cbbf6eb01559004", #insert session id of interest
+  filter(session == "30ede792dba1cf07002b2026ee7605b7", #insert session id of interest
          label %in% c("location", "region", 
                       "location_hobo", "region_hobo",
                       "location_a", "region_a",
