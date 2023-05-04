@@ -41,7 +41,7 @@ rm(files, log_output_folder_id)
 filenames <- gsub("\\.json$","", list.files(here("data")))
 
 for(i in filenames){
-  assign(i, read_json(here("data", paste(i, ".json", sep=""))))
+  assign(i, fromJSON(here("data", paste(i, ".json", sep=""))))
 }
 
 merged <- lapply(ls(), get)
@@ -53,8 +53,9 @@ rm(list=setdiff(ls(), "merged"))
 # Unnest list
 ```{r}
 
-logs <- merged %>% 
-  as.tbl_json()
+
+t <- do.call(rbind, merged)
+
 ```
 
 
