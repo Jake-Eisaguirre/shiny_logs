@@ -55,13 +55,27 @@ rm(list=setdiff(ls(), "merged"))
 # Unnest list
 ```{r}
 
-df_format <- bind_rows(merged[[1]]$inputs %>%
+d <- bind_rows(merged[[2]]$inputs %>%
             mutate(type = "input"),
-          merged[[1]]$outputs %>%
-            mutate(type = "output")) %>%
-  mutate(timestamp = lubridate::ydm_hms(timestamp))
-
+          merged[[2]]$outputs %>%
+            mutate(type = "output"),
+          merged[[2]]$session %>% 
+            mutate(type = "session")) %>%
+  mutate(timestamp = lubridate::ydm_hms(timestamp)) %>% 
+  filter(str_detect(name,"download_btn") |
+         str_detect(name, "location") | 
+         str_detect(name, "region"))
+  
 ```
 
+```{r}
+
+df_format <- purrr::map_dfr(merged, .id = "id", ~ {dplyr::bind_rows(.$inputs %>%
+                                                                       mutate(type = "input"),
+                                                                .$outputs %>% 
+                                                                  mutate(type = "output")) %>% 
+    mutate(timestamp = lubridate::ymd_hms(timestamp))})
+
+```
 
 
