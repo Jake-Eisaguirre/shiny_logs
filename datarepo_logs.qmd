@@ -22,6 +22,8 @@ shelf(tidyverse, googledrive, here, janitor, rjson, jsonlite, ndjson, tidyjson, 
 ```{r}
 #| echo: false
 
+unlink(here("data/*"))
+
 logs_output_folder <- "https://drive.google.com/drive/folders/1RIThFYRvFXQ0m0XefcETOCQ05meM_7wr"
 
 log_output_folder_id <- drive_get(as_id(logs_output_folder))
@@ -53,8 +55,11 @@ rm(list=setdiff(ls(), "merged"))
 # Unnest list
 ```{r}
 
-
-t <- do.call(rbind, merged)
+df_format <- bind_rows(merged[[1]]$inputs %>%
+            mutate(type = "input"),
+          merged[[1]]$outputs %>%
+            mutate(type = "output")) %>%
+  mutate(timestamp = lubridate::ydm_hms(timestamp))
 
 ```
 
