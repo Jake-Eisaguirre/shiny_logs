@@ -7,6 +7,7 @@ editor_options:
 ---
 
 # Packages
+
 ```{r}
 
 if (!require(librarian)){
@@ -19,6 +20,7 @@ shelf(tidyverse, googledrive, here, janitor, rjson, jsonlite, ndjson, tidyjson, 
 ```
 
 # Download .json logs
+
 ```{r}
 #| echo: false
 
@@ -38,6 +40,7 @@ rm(files, log_output_folder_id)
 ```
 
 # Bind .json files together
+
 ```{r}
 
 filenames <- gsub("\\.json$","", list.files(here("data")))
@@ -53,13 +56,17 @@ rm(list=setdiff(ls(), "merged"))
 ```
 
 # Unnest list
+
 ```{r}
 
-d <- bind_rows(merged[[2]]$inputs %>%
+a <- plyr::rbind.fill(merged[[1]]$inputs, merged[[1]]$outputs)
+
+
+d <- bind_rows(merged[[1]]$inputs %>%
             mutate(type = "input"),
-          merged[[2]]$outputs %>%
+          merged[[1]]$outputs %>%
             mutate(type = "output"),
-          merged[[2]]$session %>% 
+          merged[[1]]$session %>% 
             mutate(type = "session")) %>%
   mutate(timestamp = lubridate::ydm_hms(timestamp)) %>% 
   filter(str_detect(name,"download_btn") |
@@ -77,5 +84,3 @@ df_format <- purrr::map_dfr(merged, .id = "id", ~ {dplyr::bind_rows(.$inputs %>%
     mutate(timestamp = lubridate::ymd_hms(timestamp))})
 
 ```
-
-
